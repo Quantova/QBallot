@@ -1,0 +1,61 @@
+{
+  "name": "@quantovainc/qballot",
+  "version": "0.1.0",
+  "description": "Post quantum election integrity. Seals certified software, mandates of officials, station returns, witness signatures, ballot batches, tabulation actions and declared results with ML-DSA-65 under FIPS 204 and Quantova time proofs, without revealing any vote.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "qballot": "bin/qballot.js"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib/",
+    "bin/",
+    "wasm/qballot_native.js",
+    "wasm/qballot_native_bg.wasm",
+    "wasm/qballot_native.d.ts",
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "NOTICE",
+    "AUTHORS"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@quantovainc/qstamp": "0.1.5"
+  },
+  "keywords": [
+    "post-quantum",
+    "quantum-safe",
+    "elections",
+    "electoral-integrity",
+    "ballot",
+    "anti-corruption",
+    "government",
+    "ml-dsa",
+    "fips-204",
+    "quantova"
+  ],
+  "license": "Apache-2.0 OR MIT",
+  "author": "Quantova Inc",
+  "homepage": "https://github.com/Quantova/QBallot",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Quantova/QBallot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Quantova/QBallot/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
