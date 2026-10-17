@@ -1,11 +1,11 @@
 // Copyright 2026 Quantova Inc
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-export type RecordType = 'election' | 'software' | 'mandate' | 'stationReturn' | 'witness' | 'batch' | 'entry' | 'result';
+export type RecordType = 'election' | 'software' | 'contest' | 'mandate' | 'stationReturn' | 'witness' | 'batch' | 'entry' | 'result';
 export type Role = 'authority' | 'official' | 'witness' | 'count' | 'tabulator';
 
 export interface Envelope {
-  format: 'qballot/1';
+  format: 'qballot/2';
   type: RecordType;
   algorithm: 'ML-DSA-65';
   signer: { id: string; publicKey: string };
@@ -39,6 +39,15 @@ export interface SoftwareOptions {
   buildDigest?: string;
   build?: Uint8Array;
   certifiedAt?: string;
+  note?: string;
+}
+
+export interface ContestOptions {
+  key: Uint8Array;
+  election: Envelope;
+  contest: string;
+  candidates: string;
+  publishedAt?: string;
   note?: string;
 }
 
@@ -133,10 +142,16 @@ export interface VerifyOptions {
   requireAnchor?: boolean;
   at?: string;
   maxAnchorDelay?: number;
+  maxAnchorLookups?: number;
+  keyStatus?: (keyId: string) => unknown;
   rpc?: string | string[];
   client?: unknown;
   clients?: Array<string | unknown>;
   trustSingleEndpoint?: boolean;
+  trustCustomEndpoints?: boolean;
+  allowLoopback?: boolean;
+  endpointAllowList?: string[];
+  expectedSender?: string | string[];
   contract?: string;
   trustCustomContract?: boolean;
 }
@@ -168,6 +183,8 @@ export interface AnchorOptions {
   client?: unknown;
   clients?: Array<string | unknown>;
   trustSingleEndpoint?: boolean;
+  allowLoopback?: boolean;
+  endpointAllowList?: string[];
   meter?: number;
   maxFee?: string | number;
   timeoutMs?: number;
@@ -181,6 +198,7 @@ export function describeKey(key: Uint8Array): KeyDescription;
 export function commitParty(identity: string, options?: { salt?: Uint8Array; secret?: Uint8Array; scope?: string }): { salt: Uint8Array; ref: string };
 export function election(options: ElectionOptions): Envelope;
 export function software(options: SoftwareOptions): Envelope;
+export function contest(options: ContestOptions): Envelope;
 export function mandate(options: MandateOptions): Envelope;
 export function stationReturn(options: StationReturnOptions): Envelope;
 export function witness(options: WitnessOptions): Envelope;
@@ -189,12 +207,12 @@ export function entry(options: EntryOptions): Envelope;
 export function result(options: ResultOptions): Envelope;
 export function create(type: RecordType, options: Record<string, unknown>): Envelope;
 export function anchor(envelopes: Envelope | Envelope[], options: AnchorOptions): Promise<Envelope[]>;
-export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string | string[]; client?: unknown; clients?: Array<string | unknown>; trustSingleEndpoint?: boolean; timeoutMs?: number }): Promise<Envelope[]>;
+export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string | string[]; client?: unknown; clients?: Array<string | unknown>; trustSingleEndpoint?: boolean; allowLoopback?: boolean; endpointAllowList?: string[]; timeoutMs?: number }): Promise<Envelope[]>;
 export function verify(envelope: unknown, options: VerifyOptions): Promise<VerifyResult>;
 export function refOf(envelope: Envelope): string;
 export function anchorDigest(envelope: Envelope): string;
 export function summariseReturns(returns: Envelope[]): { tally: string; returnsDigest: string; returnsCount: string };
-export const FORMAT: 'qballot/1';
+export const FORMAT: 'qballot/2';
 export const ALGORITHM: 'ML-DSA-65';
 export const KIND: 1106;
 export const TYPES: readonly RecordType[];
