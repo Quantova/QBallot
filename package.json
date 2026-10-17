@@ -1,6 +1,6 @@
 {
   "name": "@quantovainc/qballot",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Post quantum election integrity. Seals certified software, mandates of officials, station returns, witness signatures, ballot batches, tabulation actions and declared results with ML-DSA-65 under FIPS 204 and Quantova time proofs, without revealing any vote.",
   "main": "index.js",
   "types": "index.d.ts",
