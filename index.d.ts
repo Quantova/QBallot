@@ -133,9 +133,10 @@ export interface VerifyOptions {
   requireAnchor?: boolean;
   at?: string;
   maxAnchorDelay?: number;
-  rpc?: string;
+  rpc?: string | string[];
   client?: unknown;
   clients?: Array<string | unknown>;
+  trustSingleEndpoint?: boolean;
   contract?: string;
   trustCustomContract?: boolean;
 }
@@ -163,8 +164,10 @@ export interface AnchorOptions {
   seed: Uint8Array;
   index: number;
   network?: 'testnet';
-  rpc?: string;
+  rpc?: string | string[];
   client?: unknown;
+  clients?: Array<string | unknown>;
+  trustSingleEndpoint?: boolean;
   meter?: number;
   maxFee?: string | number;
   timeoutMs?: number;
@@ -186,7 +189,7 @@ export function entry(options: EntryOptions): Envelope;
 export function result(options: ResultOptions): Envelope;
 export function create(type: RecordType, options: Record<string, unknown>): Envelope;
 export function anchor(envelopes: Envelope | Envelope[], options: AnchorOptions): Promise<Envelope[]>;
-export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string; client?: unknown; timeoutMs?: number }): Promise<Envelope[]>;
+export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string | string[]; client?: unknown; clients?: Array<string | unknown>; trustSingleEndpoint?: boolean; timeoutMs?: number }): Promise<Envelope[]>;
 export function verify(envelope: unknown, options: VerifyOptions): Promise<VerifyResult>;
 export function refOf(envelope: Envelope): string;
 export function anchorDigest(envelope: Envelope): string;
