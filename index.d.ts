@@ -172,6 +172,7 @@ export interface VerifyResult {
   endpoints: string[];
   officialEndpoints: boolean | null;
   notices: string[];
+  facts: Record<string, unknown>;
   [field: string]: unknown;
 }
 
