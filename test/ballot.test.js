@@ -21,7 +21,7 @@ async function election(stations, opts) {
   const validTo = close + 6 * 3600;
   const [el, software] = await at([q.election({ key: auth, name: 'Mayor 2026', pollsOpen: iso(open), pollsClose: iso(close), calledAt: iso(open - 7200) }), q.software({ key: auth, name: 'tab', version: '1', build: Buffer.from('b'), certifiedAt: iso(open - 7100) })], open - 7000);
   const list = await at(q.contest({ key: auth, election: el, contest: 'mayor', candidates: 'alice,bob', publishedAt: iso(open - 7050) }), open - 7000);
-  const mandates = await at(officials.map((k, i) => q.mandate({ key: auth, election: el, officialKeyId: q.keyId(k), office: 'po', station: 'st-' + i, contests: 'mayor', validFrom: iso(open - 3600), validTo: iso(validTo), issuedAt: iso(open - 3600) })), open - 3500);
+  const mandates = await at(officials.map((k, i) => q.mandate({ key: auth, election: el, officialKeyId: q.keyId(k), office: 'po', station: o.stations ? o.stations[i] : 'st-' + i, contests: 'mayor', validFrom: iso(open - 3600), validTo: iso(validTo), issuedAt: iso(open - 3600) })), open - 3500);
   const unsigned = officials.map((k, i) => q.stationReturn({ key: k, mandate: mandates[i], software, election: el, contest: 'mayor', ballotsIssued: '100', ballotsCast: '90', tally: o.tally || 'alice=50,bob=40', results: Buffer.from('r' + i), signedAt: iso(close + 600) }));
   const returns = o.single ? [] : await at(unsigned, close + 700);
   if (o.single) for (const r of unsigned) returns.push(await at(r, close + 700));
@@ -43,6 +43,14 @@ test('an honest result stays valid when re-anchors and junk receipts are added i
   for (const extra of orders) {
     const r = await q.verify(e.result, Object.assign({ type: 'result', allSupplied: true, records: e.base.concat(extra) }, e.roles, e.net.opts));
     assert.strictEqual(r.status, 'valid', failing(r).join('\n'));
+  }
+});
+
+test('stations whose identifiers differ only in separators or similar letters are counted as different stations', async () => {
+  for (const names of [['st-12-3', 'st-1-23'], ['st-1', 'st-l'], ['st-0', 'st-o']]) {
+    const e = await election(2, { stations: names });
+    const r = await q.verify(e.result, Object.assign({ type: 'result', allSupplied: true, records: e.base.concat(e.returns) }, e.roles, e.net.opts));
+    assert.strictEqual(r.status, 'valid', names.join(' ') + '\n' + failing(r).join('\n'));
   }
 });
 
