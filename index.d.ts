@@ -14,6 +14,11 @@ export interface Envelope {
   anchor?: unknown;
 }
 
+export interface SeriesLedger {
+  read(name: string): Promise<string | null>;
+  compareAndSwap(name: string, expected: string | null, next: string): Promise<boolean>;
+}
+
 export interface KeyDescription {
   format: 'qballot-key/1';
   algorithm: 'ML-DSA-65';
@@ -94,6 +99,7 @@ export interface BatchOptions {
   ballots: string;
   previous?: Envelope;
   first?: boolean;
+  ledger?: string | SeriesLedger;
   sealedAt?: string;
   note?: string;
 }
@@ -107,6 +113,7 @@ export interface EntryOptions {
   detail?: Uint8Array;
   previous?: Envelope;
   first?: boolean;
+  ledger?: string | SeriesLedger;
   recordedAt?: string;
   note?: string;
 }
@@ -207,10 +214,14 @@ export function contest(options: ContestOptions): Envelope;
 export function mandate(options: MandateOptions): Envelope;
 export function stationReturn(options: StationReturnOptions): Envelope;
 export function witness(options: WitnessOptions): Envelope;
+export function batch(options: BatchOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
 export function batch(options: BatchOptions): Envelope;
+export function entry(options: EntryOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
 export function entry(options: EntryOptions): Envelope;
 export function result(options: ResultOptions): Envelope;
-export function create(type: RecordType, options: Record<string, unknown>): Envelope;
+export function create(type: RecordType, options: Record<string, unknown>): Envelope | Promise<Envelope>;
+export function folderLedger(folder: string): SeriesLedger;
+export function ledgerLatest(ledger: string | SeriesLedger, type: RecordType, seriesRef: string): Promise<Envelope | null>;
 export function anchor(envelopes: Envelope | Envelope[], options: AnchorOptions): Promise<Envelope[]>;
 export function complete(envelopes: Envelope | Envelope[], pending: unknown, options?: { rpc?: string | string[]; client?: unknown; clients?: Array<string | unknown>; trustSingleEndpoint?: boolean; allowLoopback?: boolean; endpointAllowList?: string[]; timeoutMs?: number }): Promise<Envelope[]>;
 export function verify(envelope: unknown, options: VerifyOptions): Promise<VerifyResult>;
