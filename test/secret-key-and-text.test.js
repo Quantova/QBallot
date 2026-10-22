@@ -184,7 +184,7 @@ test('options inherited from a polluted Object.prototype are ignored', async () 
   const now = Date.now();
   const k = q.generateKey();
   const env = q.software({ key: k, name: 'c', version: '1', build: Buffer.from('b'), certifiedAt: iso(now - 1000) });
-  const opts = { type: 'software', authorityKeys: [q.keyId(k)], at: iso(now) };
+  const opts = { type: 'software', network: 'testnet', authorityKeys: [q.keyId(k)], at: iso(now) };
   const before = (await q.verify(env, opts)).status;
   assert.notStrictEqual(before, 'valid');
   Object.prototype.requireAnchor = false;

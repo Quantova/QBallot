@@ -145,13 +145,13 @@ qballot software --key authority.key --name "Count system" --version 4.2.1 --bui
 qballot contest --key authority.key --election election.json --contest district-9 --candidates "Candidate A,Candidate B" --out contest.json
 qballot mandate --key authority.key --election election.json --official-key-id official.pub.json --office "Presiding officer" --station station-1 --contests district-9 --valid-from <polls open> --valid-to <mandate end> --out mandate.json
 qballot station-return --key official.key --election election.json --mandate mandate.json --software software.json --contest district-9 --ballots-issued 1000 --ballots-cast 900 --tally "Candidate A=500,Candidate B=390" --results results.pdf --out return.json
-qballot anchor election.json software.json contest.json mandate.json --seed-file account.key --trust-single-endpoint
+qballot anchor election.json software.json contest.json mandate.json --network testnet --seed-file account.key --trust-single-endpoint
 mkdir ledger
 qballot batch --key count.key --station-return return.json --batch-root <batch root> --ballots 900 --first --ledger ledger --out batch.json
 qballot entry --key tabulator.key --software software.json --action "tabulate district-9" --detail count.log --first --ledger ledger --out entry.json
-qballot anchor return.json batch.json entry.json --seed-file account.key --trust-single-endpoint
+qballot anchor return.json batch.json entry.json --network testnet --seed-file account.key --trust-single-endpoint
 
-qballot verify return.json --type station-return --authority authority.pub.json --official official.pub.json --witness witness.pub.json --count count.pub.json --tabulator tabulator.pub.json --record election.json --record software.json --record contest.json --record mandate.json --results results.pdf --trust-single-endpoint
+qballot verify return.json --type station-return --network testnet --authority authority.pub.json --official official.pub.json --witness witness.pub.json --count count.pub.json --tabulator tabulator.pub.json --record election.json --record software.json --record contest.json --record mandate.json --results results.pdf --trust-single-endpoint
 ```
 
 The file account.key holds the 32 byte seed of a funded Quantova account, as 64 hexadecimal characters, which pays for anchoring. It is separate from the signing keys of officials.
@@ -174,7 +174,7 @@ The command exits with status 0 when the result is valid, 1 when it is invalid, 
 
 ## Network
 
-The live Quantova network is named Q-test-net-01. Its genesis hash and the official Qstamp contract that records anchors are pinned in the Qstamp release this SDK depends on. The public endpoint is https://q-test-net-01.quantova.org. By default verification consults the official endpoints of the network. Endpoints chosen by the verifier are given with the rpc or clients option, or with --rpc once for each on the command line, and verification consults them only with trustCustomEndpoints, or --trust-custom-endpoints. An endpoint on a loopback address is refused unless allowLoopback, or --allow-loopback, is set, and an endpoint on a private network address unless it is named in endpointAllowList, or with --allow-endpoint. The option expectedSender, or --expect-sender, names the Quantova accounts entitled to anchor records, and an anchor signed by any other account is invalid. Anchoring accepts chain data only when at least two endpoints run by different operators agree, and the option trustSingleEndpoint, or --trust-single-endpoint, relies on one endpoint for anchoring and for the time of the chain.
+The live Quantova network is named Q-test-net-01. Its genesis hash and the official Qstamp contract that records anchors are pinned in the Qstamp release this SDK depends on. The public endpoint is https://q-test-net-01.quantova.org. By default verification consults the official endpoints of the network. Every verification names the network its records were anchored on with the network option, or --network on the command line, testnet for the public network or custom for a chain reached only through endpoints the verifier chose, and an anchor recorded on any other network fails. Endpoints chosen by the verifier are given with the rpc or clients option, or with --rpc once for each on the command line, and verification consults them only with trustCustomEndpoints, or --trust-custom-endpoints. An endpoint on a loopback address is refused unless allowLoopback, or --allow-loopback, is set, and an endpoint on a private network address unless it is named in endpointAllowList, or with --allow-endpoint. The option expectedSender, or --expect-sender, names the Quantova accounts entitled to anchor records, and an anchor signed by any other account is invalid. Anchoring accepts chain data only when at least two endpoints run by different operators agree, and the option trustSingleEndpoint, or --trust-single-endpoint, relies on one endpoint for anchoring and for the time of the chain.
 
 ## Licence
 
