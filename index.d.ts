@@ -99,7 +99,7 @@ export interface BatchOptions {
   ballots: string;
   previous?: Envelope;
   first?: boolean;
-  ledger?: string | SeriesLedger;
+  ledger: string | SeriesLedger | false;
   sealedAt?: string;
   note?: string;
 }
@@ -113,7 +113,7 @@ export interface EntryOptions {
   detail?: Uint8Array;
   previous?: Envelope;
   first?: boolean;
-  ledger?: string | SeriesLedger;
+  ledger: string | SeriesLedger | false;
   recordedAt?: string;
   note?: string;
 }
@@ -215,9 +215,9 @@ export function mandate(options: MandateOptions): Envelope;
 export function stationReturn(options: StationReturnOptions): Envelope;
 export function witness(options: WitnessOptions): Envelope;
 export function batch(options: BatchOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
-export function batch(options: BatchOptions): Envelope;
+export function batch(options: BatchOptions & { ledger: false }): Envelope;
 export function entry(options: EntryOptions & { ledger: string | SeriesLedger }): Promise<Envelope>;
-export function entry(options: EntryOptions): Envelope;
+export function entry(options: EntryOptions & { ledger: false }): Envelope;
 export function result(options: ResultOptions): Envelope;
 export function create(type: RecordType, options: Record<string, unknown>): Envelope | Promise<Envelope>;
 export function folderLedger(folder: string): SeriesLedger;

@@ -20,8 +20,8 @@ async function honest() {
   const returns = [];
   for (const [i, k] of [K.official, official2].entries()) returns.push(await at(q.stationReturn({ key: k, mandate: mandates[i], software, election, contest: 'mayor', ballotsIssued: '100', ballotsCast: '90', tally: 'alice=' + (50 - i) + ',bob=' + (40 + i), results: Buffer.from('r' + i), signedAt: iso(close + 600) }), close + 700));
   const witness = await at(q.witness({ key: K.witness, stationReturn: returns[0], signedAt: iso(close + 800) }), close + 900);
-  const batch = await at(q.batch({ key: K.count, stationReturn: returns[0], batchRoot: 'ab'.repeat(32), ballots: '90', first: true, sealedAt: iso(close + 1000) }), close + 1100);
-  const entry = await at(q.entry({ key: K.tabulator, software, action: 'tabulate mayor', detail: Buffer.from('log'), first: true, recordedAt: iso(close + 1200) }), close + 1300);
+  const batch = await at(q.batch({ ledger: false, key: K.count, stationReturn: returns[0], batchRoot: 'ab'.repeat(32), ballots: '90', first: true, sealedAt: iso(close + 1000) }), close + 1100);
+  const entry = await at(q.entry({ ledger: false, key: K.tabulator, software, action: 'tabulate mayor', detail: Buffer.from('log'), first: true, recordedAt: iso(close + 1200) }), close + 1300);
   const result = await at(q.result({ key: K.authority, election, contest: 'mayor', returns, declaredAt: iso(close + 3600) }), close + 3700);
   net.chain.block(now);
   const roles = Object.fromEntries(Object.entries(K).map(([r, k]) => [r + 'Keys', [q.keyId(k)]]));
