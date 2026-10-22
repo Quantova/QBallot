@@ -35,6 +35,7 @@ export interface ElectionOptions {
   pollsClose: string;
   calledAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface SoftwareOptions {
@@ -45,6 +46,7 @@ export interface SoftwareOptions {
   build?: Uint8Array;
   certifiedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface ContestOptions {
@@ -54,6 +56,7 @@ export interface ContestOptions {
   candidates: string;
   publishedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface MandateOptions {
@@ -67,6 +70,7 @@ export interface MandateOptions {
   validTo: string;
   issuedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface StationReturnOptions {
@@ -83,6 +87,7 @@ export interface StationReturnOptions {
   results?: Uint8Array;
   signedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface WitnessOptions {
@@ -90,6 +95,7 @@ export interface WitnessOptions {
   stationReturn: Envelope;
   signedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface BatchOptions {
@@ -102,6 +108,7 @@ export interface BatchOptions {
   ledger: string | SeriesLedger | false;
   sealedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface EntryOptions {
@@ -116,6 +123,7 @@ export interface EntryOptions {
   ledger: string | SeriesLedger | false;
   recordedAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export interface ResultOptions {
@@ -128,6 +136,7 @@ export interface ResultOptions {
   returns?: Envelope[];
   declaredAt?: string;
   note?: string;
+  clock?: { chainMs: number };
 }
 
 export type KeyStatus = { revoked: false } | { revoked: true; revokedAt: number };
