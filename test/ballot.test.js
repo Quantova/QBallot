@@ -46,11 +46,9 @@ test('an honest result stays valid when re-anchors and junk receipts are added i
   }
 });
 
-test('stations whose identifiers differ only in separators or similar letters are counted as different stations', async () => {
-  for (const names of [['st-12-3', 'st-1-23'], ['st-1', 'st-l'], ['st-0', 'st-o']]) {
-    const e = await election(2, { stations: names });
-    const r = await q.verify(e.result, Object.assign({ type: 'result', allSupplied: true, records: e.base.concat(e.returns) }, e.roles, e.net.opts));
-    assert.strictEqual(r.status, 'valid', names.join(' ') + '\n' + failing(r).join('\n'));
+test('stations whose identifiers differ only in separators, leading zeros or similar letters are one station and are never counted twice', async () => {
+  for (const names of [['station-012', 'station_12'], ['st-1', 'st-l'], ['st-0', 'st-o']]) {
+    await assert.rejects(election(2, { stations: names }), /counted only once/, names.join(' '));
   }
 });
 

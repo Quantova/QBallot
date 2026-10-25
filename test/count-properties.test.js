@@ -119,7 +119,7 @@ test('the declared result equals the sum of the counted station returns and a mi
   t.diagnostic(JSON.stringify(Object.assign({ rounds: ROUNDS }, counts)));
 });
 
-test('station identifiers are compared exactly, so stations that look alike are distinct and a return cannot borrow the mandate of a lookalike station', async (t) => {
+test('stations named alike are one station, a result never counts two of them and each extra mandate for the station fails', async (t) => {
   const rng = mulberry32(0x57a7);
   let groups = 0;
   for (const group of ALIKE) {
@@ -130,23 +130,14 @@ test('station identifiers are compared exactly, so stations that look alike are 
     for (const name of use) stations.push(await e.station(name));
     const returns = [];
     for (const s of stations) returns.push(await e.ret(s, e.close + 300, e.close + 3200));
-    const result = await e.at(q.result({ key: e.auth, election: e.el, contest: 'mayor', returns, declaredAt: iso(e.close + 4000) }), e.close + 4100);
-    assert.strictEqual(result.statement.returnsCount, String(use.length));
-    assert.strictEqual(result.statement.tally, sumOf(returns));
+    assert.throws(() => q.result({ key: e.auth, election: e.el, contest: 'mayor', returns, declaredAt: iso(e.close + 4000) }), /counted only once/, use.join(' '));
     const base = [e.el, e.software, e.list].concat(stations.map((s) => s.m));
-    const r = await e.check(result, 'result', base.concat(returns));
-    assert.strictEqual(r.status, 'valid', use.join(' ') + '\n' + failing(r).join('\n'));
-    const [a, b] = [stations[0], stations[1]];
-    const st = Object.assign({}, F.parse(returns[1]).statement, { returnId: crypto.randomBytes(16).toString('hex'), officialKeyId: q.keyId(b.k), mandateRef: q.refOf(a.m), station: b.name });
-    const borrowed = await e.at(rawSign('stationReturn', st, b.k), e.close + 3200);
-    const rb = await e.check(borrowed, 'stationReturn', base);
-    assert.strictEqual(rb.status, 'invalid', 'a return for ' + b.name + ' under the mandate of ' + a.name + ' verified ' + rb.status);
-    const st2 = Object.assign({}, F.parse(returns[0]).statement, { returnId: crypto.randomBytes(16).toString('hex'), station: b.name });
-    const renamed = await e.at(rawSign('stationReturn', st2, a.k), e.close + 3200);
-    const rr = await e.check(renamed, 'stationReturn', base);
-    assert.strictEqual(rr.status, 'invalid', 'a return naming ' + b.name + ' under the mandate of ' + a.name + ' verified ' + rr.status);
-    const mixed = await e.check(result, 'result', base.concat(returns, [renamed]));
-    assert.notStrictEqual(mixed.status, 'valid', 'a result stayed valid next to a return that names a lookalike station under another mandate');
+    const rm = await e.check(stations[1].m, 'mandate', base);
+    assert.notStrictEqual(rm.status, 'valid', 'a second mandate for ' + use[0] + ' named ' + use[1] + ' verified ' + rm.status);
+    assert.ok(rm.checks.some((c) => c.name === 'station name' && !c.ok), failing(rm).join('\n'));
+    const one = await e.at(q.result({ key: e.auth, election: e.el, contest: 'mayor', returns: [returns[0]], declaredAt: iso(e.close + 4000) }), e.close + 4100);
+    const r = await e.check(one, 'result', [e.el, e.software, e.list, stations[0].m, returns[0]]);
+    assert.strictEqual(r.status, 'valid', failing(r).join('\n'));
     groups += 1;
   }
   t.diagnostic('lookalike station groups ' + groups);
