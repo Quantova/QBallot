@@ -10,7 +10,7 @@ const { network, stamper, iso, failing } = require('./chain');
 const { mulberry32, iterations } = require('./fuzz');
 
 const CANDIDATES = ['alice', 'bob', 'carol', 'dave'];
-const ALIKE = [['st-12-3', 'st-1-23', 'st-123', 'st_12_3', 'st.12.3'], ['st-1', 'st-l', 'st-i', 'st_1', 'st.1'], ['st-0', 'st-o', 'st_0', 'st.o'], ['north-1a', 'north-la', 'north-1-a', 'north_1a']];
+const ALIKE = [['st-12-3', 'st_12_3', 'st.12.3'], ['st-1-05', 'st-1-5', 'st-1-005'], ['district-2-012', 'district-2-12'], ['zone.07.003', 'zone.7.3'], ['st-1', 'st-l', 'st-i', 'st_1', 'st.1'], ['st-0', 'st-o', 'st_0', 'st.o'], ['north-1a', 'north-la', 'north-1-a', 'north_1a']];
 
 function rawSign(type, st, key) {
   const problem = F.statementProblem(type, st);
